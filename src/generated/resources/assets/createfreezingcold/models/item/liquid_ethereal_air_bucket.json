@@ -1,0 +1,6 @@
+{
+  "parent": "neoforge:item/bucket",
+  "apply_tint": true,
+  "fluid": "createfreezingcold:liquid_ethereal_air",
+  "loader": "neoforge:fluid_container"
+}

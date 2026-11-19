@@ -1,0 +1,23 @@
+{
+  "parent": "create:root",
+  "display": {
+    "icon": {
+      "id": "minecraft:tnt"
+    },
+    "title": {
+      "translate": "advancement.createfreezingcold.vault_exploded.title"
+    },
+    "description": {
+      "translate": "advancement.createfreezingcold.vault_exploded.description"
+    },
+    "frame": "challenge",
+    "show_toast": true,
+    "announce_to_chat": false,
+    "hidden": false
+  },
+  "criteria": {
+    "witnessed": {
+      "trigger": "createfreezingcold:vault_exploded"
+    }
+  }
+}

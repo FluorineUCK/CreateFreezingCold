@@ -1,0 +1,18 @@
+{
+  "block.createfreezingcold.dewar_flask": "杜瓦瓶",
+
+  "fluid.createfreezingcold.liquid_natural_air": "液化自然空气",
+  "fluid.createfreezingcold.liquid_ultrawarm_air": "液化炽热空气",
+  "fluid.createfreezingcold.liquid_ethereal_air": "液化灵质空气",
+  "fluid.createfreezingcold.liquid_sculk_air": "液化幽匿空气",
+
+  "item.createfreezingcold.liquid_natural_air_bucket": "液化自然空气桶",
+  "item.createfreezingcold.liquid_ultrawarm_air_bucket": "液化炽热空气桶",
+  "item.createfreezingcold.liquid_ethereal_air_bucket": "液化灵质空气桶",
+  "item.createfreezingcold.liquid_sculk_air_bucket": "液化幽匿空气桶",
+
+  "advancement.createfreezingcold.liquid_air_in_vault.title": "这可不是个好主意...",
+  "advancement.createfreezingcold.liquid_air_in_vault.description": "想想你都干了什么",
+  "advancement.createfreezingcold.vault_exploded.title": "我说了吧...",
+  "advancement.createfreezingcold.vault_exploded.description": "目睹仓库由于过度充盈的气体而爆炸"
+}
