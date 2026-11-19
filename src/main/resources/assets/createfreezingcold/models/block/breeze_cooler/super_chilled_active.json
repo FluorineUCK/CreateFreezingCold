@@ -1,0 +1,6 @@
+{
+  "parent": "createcraftedbeginning:block/breeze_cooler/breeze/chilled_active",
+  "textures": {
+    "1": "createfreezingcold:block/breeze_cooler/super_chilled_active"
+  }
+}

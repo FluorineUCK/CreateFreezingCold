@@ -1,0 +1,18 @@
+{
+  "block.createfreezingcold.dewar_flask": "Dewar Flask",
+
+  "fluid.createfreezingcold.liquid_natural_air": "Liquid Natural Air",
+  "fluid.createfreezingcold.liquid_ultrawarm_air": "Liquid Ultrawarm Air",
+  "fluid.createfreezingcold.liquid_ethereal_air": "Liquid Ethereal Air",
+  "fluid.createfreezingcold.liquid_sculk_air": "Liquid Sculk Air",
+
+  "item.createfreezingcold.liquid_natural_air_bucket": "Liquid Natural Air Bucket",
+  "item.createfreezingcold.liquid_ultrawarm_air_bucket": "Liquid Ultrawarm Air Bucket",
+  "item.createfreezingcold.liquid_ethereal_air_bucket": "Liquid Ethereal Air Bucket",
+  "item.createfreezingcold.liquid_sculk_air_bucket": "Liquid Sculk Air Bucket",
+
+  "advancement.createfreezingcold.liquid_air_in_vault.title": "That is not a good idea...",
+  "advancement.createfreezingcold.liquid_air_in_vault.description": "What have you done?",
+  "advancement.createfreezingcold.vault_exploded.title": "Ha, that's what I said",
+  "advancement.createfreezingcold.vault_exploded.description": "Observe a vault explode caused by fulfilling air."
+}

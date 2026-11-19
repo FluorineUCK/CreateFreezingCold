@@ -1,0 +1,142 @@
+plugins {
+    id 'java-library'
+    id 'net.neoforged.moddev' version '2.0.107'
+    id 'idea'
+}
+
+version = mod_version
+group = mod_group_id
+base { archivesName = mod_id }
+java.toolchain.languageVersion = JavaLanguageVersion.of(21)
+
+repositories {
+    mavenCentral()
+    maven { url = 'https://maven.createmod.net' }
+    maven {
+        url = 'https://maven.ithundxr.dev/snapshots'
+        content { includeGroup 'com.tterrag.registrate' }
+    }
+}
+
+neoForge {
+    version = project.neo_version
+    parchment {
+        minecraftVersion = project.parchment_minecraft_version
+        mappingsVersion = project.parchment_mappings_version
+    }
+    runs {
+        client { client() }
+        server {
+            server()
+            programArgument '--nogui'
+        }
+        data {
+            data()
+            programArguments.addAll '--mod', project.mod_id, '--all',
+                    '--output', file('src/generated/resources').absolutePath,
+                    '--existing', file('src/main/resources').absolutePath
+        }
+    }
+    mods {
+        "${mod_id}" { sourceSet(sourceSets.main) }
+    }
+}
+
+sourceSets.main.resources {
+    srcDir 'src/generated/resources'
+    exclude '**/.cache/**'
+}
+
+dependencies {
+    implementation("com.simibubi.create:create-${minecraft_version}:${create_version}:slim") {
+        transitive = false
+    }
+    implementation "com.tterrag.registrate:Registrate:${registrate_version}"
+    implementation "net.createmod.ponder:ponder-neoforge:${ponder_version}+mc${minecraft_version}"
+    compileOnly "dev.engine-room.flywheel:flywheel-neoforge-api-${minecraft_version}:${flywheel_version}"
+    runtimeOnly "dev.engine-room.flywheel:flywheel-neoforge-${minecraft_version}:${flywheel_version}"
+
+    // CCB has no confirmed Maven coordinate. Supply its built jar locally.
+    // The empty addon builds without it; Java references to CCB require this jar.
+    implementation files(providers.gradleProperty('ccb_jar').get())
+}
+
+def verifyCcbJar = tasks.register('verifyCcbJar') {
+    group = 'verification'
+    description = 'Checks that the local CCB dependency exists before launching Minecraft.'
+    def ccbJar = layout.projectDirectory.file(providers.gradleProperty('ccb_jar'))
+    doLast {
+        if (!ccbJar.get().asFile.isFile()) {
+            throw new GradleException('Missing CCB jar: ' + ccbJar.get().asFile +
+                    '. See libs/README.md or supply -Pccb_jar=<path>.')
+        }
+    }
+}
+tasks.matching { it.name in ['runClient', 'runServer', 'runData'] }.configureEach {
+    dependsOn verifyCcbJar
+}
+
+def generateModMetadata = tasks.register('generateModMetadata', ProcessResources) {
+    def properties = [
+            mod_id: mod_id, mod_name: mod_name, mod_version: mod_version,
+            mod_authors: mod_authors, mod_license: mod_license, mod_description: mod_description,
+            loader_version_range: loader_version_range, minecraft_version_range: minecraft_version_range,
+            neo_version_range: neo_version_range, create_version_range: create_version_range,
+            ccb_version_range: ccb_version_range
+    ]
+    inputs.properties properties
+    expand properties
+    from 'src/main/templates'
+    into layout.buildDirectory.dir('generated/sources/modMetadata')
+}
+sourceSets.main.resources.srcDir generateModMetadata
+neoForge.ideSyncTask generateModMetadata
+
+tasks.withType(JavaCompile).configureEach { options.encoding = 'UTF-8' }
+
+// This harness has its own main method and needs no JUnit runtime or test-engine auto-loading.
+sourceSets {
+    containerSlotVerification {
+        java.srcDir 'src/verification/java'
+        compileClasspath += sourceSets.main.output + sourceSets.main.compileClasspath
+        runtimeClasspath += sourceSets.main.runtimeClasspath
+    }
+}
+
+tasks.register('verifyContainerSlotCache', JavaExec) {
+    group = 'verification'
+    description = 'Checks container slot-cache discovery, invalidation and lookup cost.'
+    dependsOn tasks.named('containerSlotVerificationClasses')
+    classpath = sourceSets.containerSlotVerification.runtimeClasspath
+    mainClass = 'net.fluorineuck.createfreezingcold.content.liquefaction.ContainerSlotCacheTest'
+    javaLauncher = javaToolchains.launcherFor {
+        languageVersion = JavaLanguageVersion.of(21)
+    }
+}
+tasks.named('check') { dependsOn tasks.named('verifyContainerSlotCache') }
+
+tasks.register('verifyLiquidAirTransfer', JavaExec) {
+    group = 'verification'
+    dependsOn tasks.named('containerSlotVerificationClasses')
+    classpath = sourceSets.containerSlotVerification.runtimeClasspath
+    mainClass = 'net.fluorineuck.createfreezingcold.content.liquefaction.LiquidAirTransferTest'
+    javaLauncher = javaToolchains.launcherFor { languageVersion = JavaLanguageVersion.of(21) }
+}
+tasks.named('check') { dependsOn tasks.named('verifyLiquidAirTransfer') }
+
+// Opt-in headless integration tests. Separate disposable world; never use the client save.
+if (providers.gradleProperty('transferGameTests').isPresent()) {
+    sourceSets.containerSlotVerification.resources.srcDir 'src/verification/resources'
+    neoForge.mods.createfreezingcold.sourceSet(sourceSets.containerSlotVerification)
+    neoForge.runs {
+        transferGameTests {
+            type = 'gameTestServer'
+            sourceSet = sourceSets.containerSlotVerification
+            gameDirectory = layout.buildDirectory.dir('transfer-gametest-run')
+            systemProperty 'neoforge.enabledGameTestNamespaces', 'createfreezingcold'
+        }
+    }
+}
+
+tasks.named('wrapper', Wrapper).configure { distributionType = Wrapper.DistributionType.BIN }
+idea.module.downloadSources = true

@@ -1,0 +1,24 @@
+{
+  "required": true,
+  "minVersion": "0.8",
+  "package": "net.fluorineuck.createfreezingcold.mixin",
+  "compatibilityLevel": "JAVA_21",
+  "mixins": [
+    "BaseCoolerStateMixin",
+    "BreezeCoolerBlockEntityAccessor",
+    "BreezeCoolerControllerMixin",
+    "BreezeCoolerSerializationMixin",
+    "BreezeCoolerThermoregulatorHandlerMixin",
+    "ChestEvaporationTrackingMixin",
+    "HopperEvaporationTrackingMixin",
+    "ItemVaultBlockEntityAccessor",
+    "ItemVaultInventoryMixin"
+  ],
+  "client": [
+    "client.BreezeCoolerRendererMixin",
+    "client.BreezeCoolerVisualMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}
